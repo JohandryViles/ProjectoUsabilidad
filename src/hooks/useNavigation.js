@@ -4,6 +4,7 @@ export const PAGE_HASH = {
   home: '#/inicio',
   library: '#/biblioteca',
   saved: '#/guardados',
+  tools: '#/herramientas',
 };
 
 export function pageFromHash(hash) {

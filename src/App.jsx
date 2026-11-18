@@ -14,13 +14,35 @@ import {
   Keyboard,
   Search,
   Sparkles,
+  Wand2,
 } from './components/icons.jsx';
+import { ToolsPage } from './features/ToolsPage.jsx';
+import { MaterialAdaptations } from './features/MaterialAdaptations.jsx';
 import { Modal } from './components/Modal.jsx';
 import { Preferences } from './components/Preferences.jsx';
 import { MaterialCard } from './components/MaterialCard.jsx';
 import { materials } from './data/materials.js';
 import { DEFAULTS, readSaved, initialPrefs } from './preferences.js';
 import { useNavigation } from './hooks/useNavigation.js';
+
+const PAGE_COPY = {
+  home: {
+    title: 'Tu forma de aprender importa.',
+    intro: 'Explora, descubre y aprende a tu ritmo. Este espacio se adapta a ti.',
+  },
+  library: {
+    title: 'Un mundo por descubrir.',
+    intro: 'Explora la biblioteca de ejemplo y encuentra lo que te interesa.',
+  },
+  saved: {
+    title: 'Tus próximos descubrimientos.',
+    intro: 'Reúne en un solo lugar los materiales que te interesan.',
+  },
+  tools: {
+    title: 'Herramientas de IA para el aula.',
+    intro: 'Genera subtítulos, resúmenes y apoyos visuales, revísalos y publícalos.',
+  },
+};
 
 export default function App() {
   const [prefs, setPrefs] = useState(initialPrefs);
@@ -96,6 +118,7 @@ export default function App() {
     { id: 'home', label: 'Mi inicio', icon: Home },
     { id: 'library', label: 'Biblioteca', icon: BookOpen },
     { id: 'saved', label: 'Guardados', icon: Bookmark },
+    { id: 'tools', label: 'Herramientas IA', icon: Wand2 },
   ];
   return (
     <MotionConfig
@@ -115,20 +138,8 @@ export default function App() {
               <p className="eyebrow">
                 <span className="small-dot" /> UN ESPACIO PARA TODAS LAS PERSONAS
               </p>
-              <h1>
-                {page === 'home'
-                  ? 'Tu forma de aprender importa.'
-                  : page === 'library'
-                    ? 'Un mundo por descubrir.'
-                    : 'Tus próximos descubrimientos.'}
-              </h1>
-              <p>
-                {page === 'home'
-                  ? 'Explora, descubre y aprende a tu ritmo. Este espacio se adapta a ti.'
-                  : page === 'library'
-                    ? 'Explora la biblioteca de ejemplo y encuentra lo que te interesa.'
-                    : 'Reúne en un solo lugar los materiales que te interesan.'}
-              </p>
+              <h1>{PAGE_COPY[page].title}</h1>
+              <p>{PAGE_COPY[page].intro}</p>
             </div>
             <span className="welcome-mark" aria-hidden="true">
               <Sparkles size={24} />
@@ -143,117 +154,120 @@ export default function App() {
               setModal={setModal}
             />
           )}
-          <section className="materials-section" aria-labelledby="materials-title">
-            <div className="section-heading">
-              <div>
-                <div className="section-title-row">
-                  <h2 id="materials-title">
+          {page === 'tools' && <ToolsPage announce={setNotice} />}
+          {page !== 'tools' && (
+            <section className="materials-section" aria-labelledby="materials-title">
+              <div className="section-heading">
+                <div>
+                  <div className="section-title-row">
+                    <h2 id="materials-title">
+                      {page === 'home'
+                        ? 'Un poco de inspiración'
+                        : page === 'library'
+                          ? 'Biblioteca de materiales'
+                          : 'Materiales guardados'}
+                    </h2>
+                    <span className="count-badge">
+                      {page === 'home' ? materials.length : visible.length}
+                    </span>
+                  </div>
+                  <p>
                     {page === 'home'
-                      ? 'Un poco de inspiración'
-                      : page === 'library'
-                        ? 'Biblioteca de materiales'
-                        : 'Materiales guardados'}
-                  </h2>
-                  <span className="count-badge">
-                    {page === 'home' ? materials.length : visible.length}
-                  </span>
+                      ? 'Cada tema es una nueva puerta. ¿Cuál quieres abrir hoy?'
+                      : 'Tarjetas de muestra para explorar y personalizar la interfaz.'}
+                  </p>
                 </div>
-                <p>
-                  {page === 'home'
-                    ? 'Cada tema es una nueva puerta. ¿Cuál quieres abrir hoy?'
-                    : 'Tarjetas de muestra para explorar y personalizar la interfaz.'}
-                </p>
+                {page === 'home' && (
+                  <button className="text-button view-all" onClick={() => navigate('library')}>
+                    Ver biblioteca <ArrowRight size={16} />
+                  </button>
+                )}
               </div>
-              {page === 'home' && (
-                <button className="text-button view-all" onClick={() => navigate('library')}>
-                  Ver biblioteca <ArrowRight size={16} />
-                </button>
-              )}
-            </div>
-            {page !== 'home' && (
-              <div className="library-controls">
-                <div className="search-block">
-                  <label className="search-label" htmlFor="material-search">
-                    Buscar materiales por título o asignatura
-                  </label>
-                  <div className="search-field">
-                    <Search size={18} />
-                    <input
-                      id="material-search"
-                      type="search"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Ej.: geometría"
-                    />
+              {page !== 'home' && (
+                <div className="library-controls">
+                  <div className="search-block">
+                    <label className="search-label" htmlFor="material-search">
+                      Buscar materiales por título o asignatura
+                    </label>
+                    <div className="search-field">
+                      <Search size={18} />
+                      <input
+                        id="material-search"
+                        type="search"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Ej.: geometría"
+                      />
+                    </div>
+                  </div>
+                  <div className="filter-group" role="group" aria-label="Filtrar por tipo">
+                    {['Todos', 'Lectura', 'Video', 'Actividad'].map((f) => (
+                      <button
+                        key={f}
+                        aria-pressed={filter === f}
+                        className={filter === f ? 'selected' : ''}
+                        onClick={() => setFilter(f)}
+                      >
+                        {f}
+                      </button>
+                    ))}
                   </div>
                 </div>
-                <div className="filter-group" role="group" aria-label="Filtrar por tipo">
-                  {['Todos', 'Lectura', 'Video', 'Actividad'].map((f) => (
-                    <button
-                      key={f}
-                      aria-pressed={filter === f}
-                      className={filter === f ? 'selected' : ''}
-                      onClick={() => setFilter(f)}
-                    >
-                      {f}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            {page !== 'home' && (
-              <p className="result-count" role="status">
-                {visible.length}{' '}
-                {visible.length === 1 ? 'material encontrado' : 'materiales encontrados'}
-              </p>
-            )}
-            <div className="material-grid">
-              {visible.map((m, i) => (
-                <MaterialCard
-                  key={m.id}
-                  material={m}
-                  index={i}
-                  reduced={reduced}
-                  saved={saved.includes(m.id)}
-                  toggleSave={toggleSave}
-                  onOpen={openDetails}
-                />
-              ))}
-            </div>
-            {!visible.length && (
-              <div className="empty-state">
-                <Bookmark size={32} />
-                <h3>
-                  {page === 'saved' && !saved.length
-                    ? 'Tu colección empieza aquí'
-                    : 'No encontramos ese material'}
-                </h3>
-                <p>
-                  {page === 'saved' && !saved.length
-                    ? 'Usa el marcador de una tarjeta para guardarla en este espacio.'
-                    : 'Prueba con otro tema o cambia los filtros.'}
+              )}
+              {page !== 'home' && (
+                <p className="result-count" role="status">
+                  {visible.length}{' '}
+                  {visible.length === 1 ? 'material encontrado' : 'materiales encontrados'}
                 </p>
-                <button
-                  className="button primary"
-                  onClick={() =>
-                    page === 'saved' && !saved.length
-                      ? navigate('library')
-                      : (setQuery(''), setFilter('Todos'))
-                  }
-                >
-                  {page === 'saved' && !saved.length ? 'Explorar biblioteca' : 'Limpiar búsqueda'}
-                  <ArrowRight size={17} />
-                </button>
+              )}
+              <div className="material-grid">
+                {visible.map((m, i) => (
+                  <MaterialCard
+                    key={m.id}
+                    material={m}
+                    index={i}
+                    reduced={reduced}
+                    saved={saved.includes(m.id)}
+                    toggleSave={toggleSave}
+                    onOpen={openDetails}
+                  />
+                ))}
               </div>
-            )}
-            <div className="example-note">
-              <FileText size={14} />
-              <span>
-                Contenido de ejemplo para explorar la interfaz. Las lecciones se integrarán más
-                adelante.
-              </span>
-            </div>
-          </section>
+              {!visible.length && (
+                <div className="empty-state">
+                  <Bookmark size={32} />
+                  <h3>
+                    {page === 'saved' && !saved.length
+                      ? 'Tu colección empieza aquí'
+                      : 'No encontramos ese material'}
+                  </h3>
+                  <p>
+                    {page === 'saved' && !saved.length
+                      ? 'Usa el marcador de una tarjeta para guardarla en este espacio.'
+                      : 'Prueba con otro tema o cambia los filtros.'}
+                  </p>
+                  <button
+                    className="button primary"
+                    onClick={() =>
+                      page === 'saved' && !saved.length
+                        ? navigate('library')
+                        : (setQuery(''), setFilter('Todos'))
+                    }
+                  >
+                    {page === 'saved' && !saved.length ? 'Explorar biblioteca' : 'Limpiar búsqueda'}
+                    <ArrowRight size={17} />
+                  </button>
+                </div>
+              )}
+              <div className="example-note">
+                <FileText size={14} />
+                <span>
+                  Contenido de ejemplo para explorar la interfaz. Las lecciones se integrarán más
+                  adelante.
+                </span>
+              </div>
+            </section>
+          )}
           {page === 'home' && (
             <section className="keyboard-banner">
               <span className="keyboard-icon">
@@ -359,11 +373,12 @@ export default function App() {
                 <span key={t}>{t}</span>
               ))}
             </div>
+            <MaterialAdaptations materialId={selected.id} />
             <div className="help-note">
               <BookOpen size={22} />
               <p>
-                Esta tarjeta muestra el diseño de la biblioteca. El contenido de la lección todavía
-                no está disponible.
+                Las adaptaciones aparecen aquí cuando el docente las aprueba en «Herramientas IA».
+                El contenido completo de la lección todavía no está disponible.
               </p>
             </div>
             <button
