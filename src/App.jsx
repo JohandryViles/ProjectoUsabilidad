@@ -19,6 +19,7 @@ import {
   Wand2,
 } from './components/icons.jsx';
 import { ToolsPage } from './features/ToolsPage.jsx';
+import { ClassroomPage } from './features/ClassroomPage.jsx';
 import { MaterialAdaptations } from './features/MaterialAdaptations.jsx';
 import { ReadAloud, speechSupported } from './components/ReadAloud.jsx';
 import { ReadingGuide } from './components/ReadingGuide.jsx';
@@ -45,6 +46,10 @@ const PAGE_COPY = {
   tools: {
     title: 'Herramientas de IA para el aula.',
     intro: 'Genera subtítulos, resúmenes y apoyos visuales, revísalos y publícalos.',
+  },
+  classroom: {
+    title: 'La clase, a tu manera.',
+    intro: 'Consulta la transcripción y los apoyos que el docente ya revisó.',
   },
 };
 
@@ -132,6 +137,7 @@ export default function App() {
     { id: 'library', label: 'Biblioteca', icon: BookOpen },
     { id: 'saved', label: 'Guardados', icon: Bookmark },
     { id: 'tools', label: 'Herramientas IA', icon: Wand2 },
+    { id: 'classroom', label: 'Vista de clase', icon: BookOpen },
   ];
   return (
     <MotionConfig
@@ -179,7 +185,8 @@ export default function App() {
             />
           )}
           {page === 'tools' && <ToolsPage announce={setNotice} />}
-          {page !== 'tools' && (
+          {page === 'classroom' && <ClassroomPage defaultPictograms={prefs.pictograms} />}
+          {page !== 'tools' && page !== 'classroom' && (
             <section className="materials-section" aria-labelledby="materials-title">
               <div className="section-heading">
                 <div>

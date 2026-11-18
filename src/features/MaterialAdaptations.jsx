@@ -10,19 +10,37 @@ import { PictogramText } from './PictogramView.jsx';
  */
 export function MaterialAdaptations({ materialId, defaultPictograms = false }) {
   const [published, setPublished] = useState(null);
+  const [loadState, setLoadState] = useState('loading');
+  const [loadError, setLoadError] = useState('');
   const [showPictograms, setShowPictograms] = useState(defaultPictograms);
 
   useEffect(() => {
     let active = true;
+    setPublished(null);
+    setLoadState('loading');
+    setLoadError('');
     api(`/materials/${encodeURIComponent(materialId)}/adaptations`, { timeoutMs: 8000 })
-      .then((data) => active && setPublished(data.published))
-      .catch(() => active && setPublished(null));
+      .then((data) => {
+        if (!active) return;
+        setPublished(data.published);
+        setLoadState('ready');
+      })
+      .catch((error) => {
+        if (!active) return;
+        setPublished(null);
+        setLoadError(error.message);
+        setLoadState('error');
+      });
     return () => {
       active = false;
     };
   }, [materialId]);
 
-  if (!published) return null;
+  if (!published) {
+    if (loadState === 'loading') return <p role="status">Cargando los apoyos de clase…</p>;
+    if (loadState === 'error') return <p role="alert">{loadError}</p>;
+    return <p role="status">Todavía no hay apoyos aprobados para esta clase.</p>;
+  }
   const { summary, glossary, plain, altTexts, pictogramText } = published;
 
   return (
@@ -55,15 +73,19 @@ export function MaterialAdaptations({ materialId, defaultPictograms = false }) {
       {glossary?.length > 0 && (
         <section aria-labelledby="adapt-glossary">
           <h3 id="adapt-glossary">Glosario</h3>
-          <dl className="glossary">
+          <ul className="glossary">
             {glossary.map((t) => (
-              <div key={t.term}>
-                <dt>{t.term}</dt>
-                <dd>{t.definition}</dd>
-                {t.example && <dd className="glossary-example">Ejemplo: {t.example}</dd>}
-              </div>
+              <li key={t.term}>
+                <details>
+                  <summary>{t.term}</summary>
+                  <div className="glossary-definition">
+                    <p>{t.definition}</p>
+                    {t.example && <p className="glossary-example">Ejemplo: {t.example}</p>}
+                  </div>
+                </details>
+              </li>
             ))}
-          </dl>
+          </ul>
         </section>
       )}
       {plain?.simplified && (

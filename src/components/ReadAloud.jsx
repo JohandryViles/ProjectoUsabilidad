@@ -7,21 +7,50 @@ export const speechSupported = () =>
   'SpeechSynthesisUtterance' in window;
 
 function readableText(element) {
-  if (!element) return '';
-  return (element.innerText || element.textContent || '').replace(/\s+/g, ' ').trim();
+  return (element?.textContent || '').trim();
 }
 
-/**
- * Reproductor de lectura en voz alta (RF-02). Lee el texto seleccionado o, si
- * no hay selección, el contenido principal, a la velocidad elegida.
- */
+function clearWordHighlight() {
+  if (typeof CSS !== 'undefined' && CSS.highlights) CSS.highlights.delete('incluaula-reading-word');
+}
+
+function highlightWord(element, start, length) {
+  if (
+    !element ||
+    typeof Highlight === 'undefined' ||
+    typeof CSS === 'undefined' ||
+    !CSS.highlights ||
+    !length
+  )
+    return false;
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+  let node;
+  let offset = 0;
+  let startPoint;
+  let endPoint;
+  while ((node = walker.nextNode())) {
+    const end = offset + node.textContent.length;
+    if (!startPoint && start >= offset && start < end) startPoint = [node, start - offset];
+    if (start + length > offset && start + length <= end)
+      endPoint = [node, start + length - offset];
+    offset = end;
+  }
+  if (!startPoint || !endPoint) return false;
+  const range = document.createRange();
+  range.setStart(...startPoint);
+  range.setEnd(...endPoint);
+  CSS.highlights.set('incluaula-reading-word', new Highlight(range));
+  return true;
+}
+
+/** Reproductor TTS con resaltado sincronizado cuando el navegador lo admite (RF-02, RF-18). */
 export function ReadAloud({ rate }) {
   const [state, setState] = useState('idle');
+  const [highlightAvailable, setHighlightAvailable] = useState(true);
   const selectionRef = useRef('');
   const supported = speechSupported();
 
   useEffect(() => {
-    // Al pulsar el botón algunos navegadores pierden la selección: se recuerda la última.
     const remember = () => {
       const text = window.getSelection?.().toString().trim();
       if (text) selectionRef.current = text;
@@ -30,24 +59,39 @@ export function ReadAloud({ rate }) {
     return () => {
       document.removeEventListener('selectionchange', remember);
       if (supported) window.speechSynthesis?.cancel();
+      clearWordHighlight();
     };
   }, [supported]);
 
   function read() {
-    const text =
-      window.getSelection?.().toString().trim() ||
-      selectionRef.current ||
-      readableText(document.getElementById('main'));
+    const main = document.getElementById('main');
+    const selected = window.getSelection?.().toString().trim() || selectionRef.current;
+    const pageText = readableText(main);
+    const text = selected || pageText;
+    const textOffset = selected ? Math.max(0, pageText.indexOf(selected)) : 0;
     selectionRef.current = '';
     if (!text) return;
     window.speechSynthesis.cancel();
+    clearWordHighlight();
+    setHighlightAvailable(true);
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'es-ES';
     utterance.rate = rate;
-    const voice = window.speechSynthesis.getVoices().find((v) => v.lang?.startsWith('es'));
+    const voice = window.speechSynthesis.getVoices().find((item) => item.lang?.startsWith('es'));
     if (voice) utterance.voice = voice;
-    utterance.onend = () => setState('idle');
-    utterance.onerror = () => setState('idle');
+    utterance.onboundary = (event) => {
+      if (event.name === 'word') {
+        setHighlightAvailable(highlightWord(main, textOffset + event.charIndex, event.charLength));
+      }
+    };
+    utterance.onend = () => {
+      clearWordHighlight();
+      setState('idle');
+    };
+    utterance.onerror = () => {
+      clearWordHighlight();
+      setState('idle');
+    };
     window.speechSynthesis.speak(utterance);
     setState('playing');
   }
@@ -64,6 +108,7 @@ export function ReadAloud({ rate }) {
 
   function stop() {
     window.speechSynthesis.cancel();
+    clearWordHighlight();
     setState('idle');
   }
 
@@ -92,7 +137,11 @@ export function ReadAloud({ rate }) {
             <Square size={14} /> Detener
           </button>
           <p role="status">
-            {status} <span className="read-aloud-rate">{String(rate).replace('.', ',')}×</span>
+            {status}
+            {state === 'playing' && !highlightAvailable
+              ? ' El resaltado palabra a palabra no está disponible en este navegador.'
+              : ''}{' '}
+            <span className="read-aloud-rate">{String(rate).replace('.', ',')}×</span>
           </p>
         </>
       ) : (

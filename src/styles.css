@@ -2541,6 +2541,33 @@ legend {
   align-items: center;
   font-size: 0.95rem;
 }
+.student-transcript {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+.student-transcript li {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 12px;
+  align-items: start;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+}
+.student-transcript .transcript-time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.student-transcript p {
+  margin: 0;
+}
+::highlight(incluaula-reading-word) {
+  background: #ffe36e;
+  color: #111522;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
 .captions-log {
   max-height: 260px;
   min-height: 120px;
@@ -2725,17 +2752,33 @@ legend {
 }
 .glossary {
   margin: 0;
+  padding: 0;
   display: grid;
   gap: 10px;
+  list-style: none;
 }
-.glossary dt {
-  font-weight: 700;
+.glossary li {
+  border-bottom: 1px solid var(--border);
+  padding: 8px 0;
 }
-.glossary dd {
-  margin: 0;
+.glossary-definition {
+  padding: 6px 0 0 12px;
   font-size: 0.85rem;
 }
+.glossary-definition p {
+  margin: 0;
+}
+.glossary-definition p + p {
+  margin-top: 6px;
+}
+.glossary li details summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
 .glossary-example {
+  font-size: 0.85rem;
   color: var(--muted);
 }
 .plain-text {

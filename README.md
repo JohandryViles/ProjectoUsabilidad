@@ -17,7 +17,7 @@ Frontend en React, Framer Motion y Lucide React. Requiere Node.js 22.13 o poster
 
 ## Límites de integración
 
-Las tarjetas son ejemplos, no lecciones implementadas. Los endpoints de IA, la transcripción, el VTT, los resúmenes, el lenguaje claro, el alt-text y ARASAAC los implementa el integrante B (sección siguiente). La lectura en voz alta usa la síntesis de voz del navegador. No se implementa la vista de clase. No se incluyen prototipo Figma, auditorías de herramientas externas, estudios con usuarios, informe ni presentación; esas tareas corresponden a C.
+Las tarjetas son ejemplos, no lecciones implementadas. Los endpoints de IA, la transcripción, el VTT, los resúmenes, el lenguaje claro, el alt-text y ARASAAC los implementa el integrante B (sección siguiente). La lectura en voz alta usa la síntesis de voz del navegador y resalta palabras cuando el navegador lo admite. La vista de clase muestra transcripciones aprobadas y adaptaciones publicadas para los materiales de ejemplo. El prototipo Figma y las pruebas con participantes requieren una sesión externa; el informe y la presentación se preparan después de validar el funcionamiento.
 
 Los datos de muestra están en `src/data/materials.js`. El panel de detalle muestra solo metadatos. Se puede conectar después con los contenidos y rutas que implementen los demás integrantes. No hay backend ni llamadas a servicios de IA.
 
@@ -37,7 +37,11 @@ La tipografía usa fuentes del sistema; no hace solicitudes a Google Fonts. Favo
 
 ## Comprobaciones del frontend
 
-`npm run check` ejecuta lint, doce pruebas de regresión del frontend y la compilación. `npm run format:check` comprueba el formato. Las pruebas cubren nombres accesibles, iconos decorativos, guardados, descripciones de interruptores, persistencia, rutas y búsqueda sin tildes. Las pruebas de paleta leen los tokens reales de CSS y verifican texto y botones a 4.5:1 o más, texto a 7:1 o más en alto contraste, y bordes de controles y foco a 3:1 o más. La configuración de GitHub Actions ejecuta esas mismas comprobaciones cuando el repositorio se aloja en GitHub. Estas pruebas no reemplazan las auditorías ni los estudios con usuarios del integrante C.
+`npm run check` ejecuta lint, las pruebas de regresión del frontend y del servidor, y la compilación. `npm run format:check` comprueba el formato. Las pruebas cubren nombres accesibles, iconos decorativos, guardados, descripciones de interruptores, persistencia, rutas y búsqueda sin tildes. Las pruebas de paleta leen los tokens reales de CSS y verifican texto y botones a 4.5:1 o más, texto a 7:1 o más en alto contraste, y bordes de controles y foco a 3:1 o más. La configuración de GitHub Actions ejecuta esas mismas comprobaciones cuando el repositorio se aloja en GitHub.
+
+`npm run audit:axe` comprueba las vistas de inicio, biblioteca, herramientas y clase, incluido el diálogo de preferencias y el glosario desplegable. jsdom no evalúa contraste visual; la paleta tiene pruebas separadas y Lighthouse se ejecuta en un navegador real con `npm run audit:lighthouse -- http://localhost:5173/#/clase --only-categories=accessibility` mientras `npm run dev` está activo.
+
+`npm run test:simulation` recorre con datos ficticios la consulta de transcripción aprobada y la apertura/cierre del glosario. Es una prueba funcional automatizada; no sustituye las sesiones con participantes reales ni genera sus métricas.
 
 Esta implementación incluye mecanismos de accesibilidad, pero no constituye una certificación ni sustituye la evaluación asignada al integrante C.
 
