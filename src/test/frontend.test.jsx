@@ -19,7 +19,8 @@ describe('frontend accessibility regressions', () => {
     const { container } = renderApp();
     const brand = screen.getByRole('link', { name: 'IncluAula IA, inicio' });
     expect(brand.textContent.replace(/\s+/g, ' ').trim()).toBe('IncluAula IA');
-    expect(screen.getByRole('img', { name: 'Espacio de estudiante' })).toBeTruthy();
+    // El avatar es decorativo: no debe anunciarse como imagen sin información.
+    expect(screen.queryByRole('img', { name: 'Espacio de estudiante' })).toBeNull();
     const icons = [...container.querySelectorAll('svg')];
     expect(icons.length).toBeGreaterThan(20);
     expect(icons.every((icon) => icon.getAttribute('aria-hidden') === 'true')).toBe(true);

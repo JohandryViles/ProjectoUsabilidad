@@ -172,15 +172,20 @@ export default function App() {
             </div>
             {page !== 'home' && (
               <div className="library-controls">
-                <div className="search-field">
-                  <Search size={18} />
-                  <input
-                    aria-label="Buscar materiales por título o asignatura"
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Busca un tema o asignatura…"
-                  />
+                <div className="search-block">
+                  <label className="search-label" htmlFor="material-search">
+                    Buscar materiales por título o asignatura
+                  </label>
+                  <div className="search-field">
+                    <Search size={18} />
+                    <input
+                      id="material-search"
+                      type="search"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Ej.: geometría"
+                    />
+                  </div>
                 </div>
                 <div className="filter-group" role="group" aria-label="Filtrar por tipo">
                   {['Todos', 'Lectura', 'Video', 'Actividad'].map((f) => (

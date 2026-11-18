@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { IconButton } from './IconButton.jsx';
 import { X } from './icons.jsx';
 
 export function Modal({ title, subtitle, children, onClose, drawer = false }) {
   const ref = useRef(null);
+  const titleId = useId();
   const returnFocus = useRef(document.activeElement);
   useEffect(() => {
     const dialog = ref.current;
@@ -21,7 +22,7 @@ export function Modal({ title, subtitle, children, onClose, drawer = false }) {
     <dialog
       ref={ref}
       className={drawer ? 'dialog drawer' : 'dialog'}
-      aria-labelledby="dialog-title"
+      aria-labelledby={titleId}
       onCancel={(e) => {
         e.preventDefault();
         onClose();
@@ -42,7 +43,7 @@ export function Modal({ title, subtitle, children, onClose, drawer = false }) {
       <div className="dialog-heading">
         <div>
           <p className="eyebrow">TU ESPACIO, A TU MANERA</p>
-          <h2 id="dialog-title">{title}</h2>
+          <h2 id={titleId}>{title}</h2>
           {subtitle && <p>{subtitle}</p>}
         </div>
         <IconButton label="Cerrar panel" onClick={onClose}>

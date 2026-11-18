@@ -91,7 +91,9 @@ body {
   line-height: 1.6;
 }
 button,
-input {
+input,
+textarea,
+select {
   font: inherit;
 }
 button,
@@ -124,6 +126,10 @@ button {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:not(main):focus-visible,
 label:has(input:focus-visible) {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
@@ -2300,4 +2306,18 @@ legend {
     font-size: 0.8rem;
     letter-spacing: 0;
   }
+}
+
+/* Auditoría: etiqueta visible de la búsqueda (WCAG 3.3.2, 2.5.3). */
+.search-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 230px;
+}
+.search-label {
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--text);
 }

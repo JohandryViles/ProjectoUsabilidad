@@ -96,7 +96,7 @@ export function Topbar({ nav, page, setModal }) {
             <span>Accesibilidad</span>
             <span className="shortcut-dot" />
           </button>
-          <span className="profile-avatar" role="img" aria-label="Espacio de estudiante">
+          <span className="profile-avatar" aria-hidden="true">
             <GraduationCap size={21} />
           </span>
         </div>
