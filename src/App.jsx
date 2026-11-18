@@ -12,12 +12,16 @@ import {
   Home,
   Heart,
   Keyboard,
+  LogOut,
   Search,
+  SlidersHorizontal,
   Sparkles,
   Wand2,
 } from './components/icons.jsx';
 import { ToolsPage } from './features/ToolsPage.jsx';
 import { MaterialAdaptations } from './features/MaterialAdaptations.jsx';
+import { ReadAloud, speechSupported } from './components/ReadAloud.jsx';
+import { ReadingGuide } from './components/ReadingGuide.jsx';
 import { Modal } from './components/Modal.jsx';
 import { Preferences } from './components/Preferences.jsx';
 import { MaterialCard } from './components/MaterialCard.jsx';
@@ -66,6 +70,15 @@ export default function App() {
     document.documentElement.dataset.spacing = String(prefs.spacing);
     document.documentElement.dataset.motion = reduced ? 'reduced' : 'full';
     document.documentElement.dataset.focus = String(prefs.focus);
+    const root = document.documentElement.dataset;
+    root.saturation = prefs.saturation;
+    root.font = prefs.legibleFont ? 'legible' : 'system';
+    root.reading = String(prefs.readingMode);
+    root.tts = String(prefs.tts);
+    root.captions = prefs.captionsLarge ? 'large' : 'normal';
+    root.strongFocus = String(prefs.strongFocus);
+    root.links = prefs.underlineLinks ? 'underline' : 'default';
+    root.cursor = prefs.bigCursor ? 'large' : 'default';
     try {
       localStorage.setItem('incluaula.preferences.v1', JSON.stringify(prefs));
     } catch {
@@ -128,6 +141,17 @@ export default function App() {
       <a className="skip-link" href="#main">
         Saltar al contenido principal
       </a>
+      {prefs.readingMode && (
+        <div className="reading-bar" role="region" aria-label="Modo lectura activo">
+          <p>Modo lectura activo</p>
+          <button className="button primary" onClick={() => update('readingMode', false)}>
+            <LogOut size={17} /> Salir del modo lectura
+          </button>
+          <button className="button secondary" onClick={() => setModal('preferences')}>
+            <SlidersHorizontal size={17} /> <span className="reading-bar-label">Accesibilidad</span>
+          </button>
+        </div>
+      )}
       <Sidebar nav={nav} page={page} saved={saved} setModal={setModal} />
       <div className="app-shell">
         <Topbar nav={nav} page={page} setModal={setModal} />
@@ -313,6 +337,8 @@ export default function App() {
           </m.div>
         )}
       </AnimatePresence>
+      {prefs.tts && <ReadAloud rate={prefs.ttsRate} />}
+      {prefs.readingGuide && <ReadingGuide />}
       {storageFailed && (
         <div className="storage-warning" role="status">
           El navegador no permite guardar preferencias. Se aplicarán durante esta visita.
@@ -323,6 +349,7 @@ export default function App() {
           prefs={prefs}
           update={update}
           systemReduced={systemReduced}
+          speechSupported={speechSupported()}
           reset={() => {
             setPrefs({ ...DEFAULTS });
             setNotice('Preferencias restablecidas.');
@@ -373,7 +400,7 @@ export default function App() {
                 <span key={t}>{t}</span>
               ))}
             </div>
-            <MaterialAdaptations materialId={selected.id} />
+            <MaterialAdaptations materialId={selected.id} defaultPictograms={prefs.pictograms} />
             <div className="help-note">
               <BookOpen size={22} />
               <p>

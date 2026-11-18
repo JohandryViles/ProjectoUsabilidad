@@ -2766,3 +2766,249 @@ legend {
     padding: 18px 16px;
   }
 }
+
+/* ------------------------------------------------------------------------
+   Preferencias de accesibilidad ampliadas (menú F3).
+   ------------------------------------------------------------------------ */
+.switches > legend {
+  margin-top: 6px;
+}
+.range-field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 12px 0;
+  font-size: 0.8rem;
+}
+.range-field label {
+  grid-column: 1 / -1;
+  font-weight: 600;
+}
+.range-field input[type='range'] {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--primary);
+}
+.range-field input[type='range']:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.range-field output {
+  min-width: 3.5em;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Color: los temas ya cumplen contraste; esto reduce la intensidad del color. */
+:root[data-saturation='low'] {
+  filter: saturate(0.45);
+}
+:root[data-saturation='gray'] {
+  filter: grayscale(1);
+}
+
+/* Letra más legible: tipografías con formas de letra bien diferenciadas. */
+:root[data-font='legible'] {
+  --font-body:
+    'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', Verdana, Tahoma, 'DejaVu Sans',
+    sans-serif;
+}
+:root[data-font='legible'] body {
+  letter-spacing: 0.01em;
+}
+
+/* Foco más visible (WCAG 2.4.7 y 2.4.13 como mejora). */
+:root[data-strong-focus='true'] :focus-visible,
+:root[data-strong-focus='true'] label:has(input:focus-visible) {
+  outline: 5px solid var(--focus) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 10px var(--bg) !important;
+}
+
+/* Resaltar enlaces (WCAG 1.4.1): el enlace no depende solo del color. */
+:root[data-links='underline'] a:not(.button),
+:root[data-links='underline'] .text-button {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* Cursor grande. */
+:root[data-cursor='large'],
+:root[data-cursor='large'] * {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='M4 2l15 10.5-6.6 1.3L9.2 21z' fill='%23111522' stroke='%23ffffff' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+      8 4,
+    auto;
+}
+:root[data-cursor='large'] :is(a, button, label, select, summary, [role='switch']),
+:root[data-cursor='large'] :is(a, button, label, select, summary, [role='switch']) * {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='M4 2l15 10.5-6.6 1.3L9.2 21z' fill='%23111522' stroke='%23ffffff' stroke-width='1.4' stroke-linejoin='round'/%3E%3Ccircle cx='17.5' cy='18.5' r='4' fill='%23ffffff' stroke='%23111522' stroke-width='1.6'/%3E%3C/svg%3E")
+      8 4,
+    pointer;
+}
+
+/* Subtítulos grandes. */
+:root[data-captions='large'] .captions-log {
+  font-size: 1.6rem;
+  line-height: 1.45;
+  max-height: 380px;
+}
+
+/* Modo lectura (RF-19): oculta lo secundario y deja visible la salida. */
+:root[data-reading='true'] :is(.sidebar, .topbar, .mobile-nav, .hero, .comfort-bar),
+:root[data-reading='true'] :is(.keyboard-banner, .welcome-mark, .example-note, main > footer) {
+  display: none;
+}
+:root[data-reading='true'] .app-shell {
+  margin-left: 0;
+}
+:root[data-reading='true'] main {
+  max-width: 860px;
+}
+.reading-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 2px solid var(--control-border);
+}
+.reading-bar p {
+  font-weight: 700;
+  font-size: 0.8rem;
+  margin-right: auto;
+}
+
+/* Lectura en voz alta (RF-02). */
+.read-aloud {
+  position: fixed;
+  bottom: 16px;
+  left: calc(244px + 16px);
+  z-index: 35;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--control-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+.read-aloud p {
+  font-size: 0.75rem;
+}
+.read-aloud-rate {
+  font-weight: 700;
+  margin-left: 4px;
+}
+:root[data-tts='true'] main {
+  padding-bottom: 110px;
+}
+:root[data-reading='true'] .read-aloud {
+  left: 16px;
+}
+
+/* Guía de lectura. */
+.reading-guide {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.reading-guide-shade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: #11152273;
+}
+.reading-guide-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-block: 2px solid var(--focus);
+}
+@media (max-width: 1180px) {
+  .read-aloud {
+    left: calc(218px + 16px);
+  }
+}
+/* El foco nunca queda debajo de la barra de lectura ni del reproductor (WCAG 2.4.11). */
+:root[data-tts='true'] {
+  scroll-padding-bottom: 130px;
+}
+:root[data-reading='true'] {
+  scroll-padding-top: 90px;
+}
+/* Con texto ampliado los filtros pasan a otra línea en lugar de desbordar (1.4.10). */
+.filter-group {
+  flex-wrap: wrap;
+}
+@media (max-width: 760px) {
+  .read-aloud {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    flex-wrap: nowrap;
+    padding: 8px 10px;
+  }
+  .read-aloud .button {
+    padding: 8px 12px;
+  }
+  /* El estado sigue disponible para lectores de pantalla, sin ocupar espacio. */
+  .read-aloud p {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  :root[data-tts='true'] main {
+    padding-bottom: 90px;
+  }
+  :root[data-tts='true'] {
+    scroll-padding-bottom: 90px;
+  }
+  .reading-bar {
+    padding: 8px 12px;
+    flex-wrap: nowrap;
+  }
+  .reading-bar p {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .reading-bar .button {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  .reading-bar .button.primary {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .reading-bar .button.secondary {
+    min-width: 44px;
+  }
+  .reading-bar-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

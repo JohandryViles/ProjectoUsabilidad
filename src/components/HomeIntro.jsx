@@ -9,6 +9,7 @@ import {
   Settings2,
   Contrast,
 } from './icons.jsx';
+import { TEXT_SIZES } from '../preferences.js';
 
 export function HomeIntro({ prefs, reduced, navigate, update, setModal }) {
   return (
@@ -89,14 +90,18 @@ export function HomeIntro({ prefs, reduced, navigate, update, setModal }) {
         <div className="quick-options">
           <button
             onClick={() =>
-              update('size', prefs.size === 125 ? 100 : prefs.size === 100 ? 112 : 125)
+              update('size', TEXT_SIZES[(TEXT_SIZES.indexOf(prefs.size) + 1) % TEXT_SIZES.length])
             }
           >
             <Type size={19} />
             <span>
               Texto{' '}
               <strong>
-                {prefs.size === 100 ? 'normal' : prefs.size === 112 ? 'grande' : 'muy grande'}
+                {
+                  { 100: 'normal', 112: 'grande', 125: 'muy grande', 150: 'extra grande' }[
+                    prefs.size
+                  ]
+                }
               </strong>
             </span>
           </button>

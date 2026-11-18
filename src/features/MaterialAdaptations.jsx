@@ -8,9 +8,9 @@ import { PictogramText } from './PictogramView.jsx';
  * Vista de estudiante: muestra solo las adaptaciones aprobadas por el docente
  * (RF-03, RF-15, RF-16, RF-17). Si no hay servidor o nada aprobado, no muestra nada.
  */
-export function MaterialAdaptations({ materialId }) {
+export function MaterialAdaptations({ materialId, defaultPictograms = false }) {
   const [published, setPublished] = useState(null);
-  const [showPictograms, setShowPictograms] = useState(false);
+  const [showPictograms, setShowPictograms] = useState(defaultPictograms);
 
   useEffect(() => {
     let active = true;
